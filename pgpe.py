@@ -1,3 +1,6 @@
+"""
+Uses evotorch to run PGPE on the test objective functions.
+"""
 import torch
 from torch.distributions import Normal
 import numpy as np
@@ -7,7 +10,7 @@ from evotorch import Problem
 from evotorch.algorithms import PGPE
 from evotorch.logging import StdOutLogger
 
-from testbed_functions import easom, cross_in_tray, egg_holder
+from objective_functions import easom, cross_in_tray, egg_holder
 from vis_utils import plot_algorithm
 
 

@@ -1,3 +1,7 @@
+"""
+Tests evotorch's implementation of SNES in the objective
+functions provided.
+"""
 import torch
 from torch.distributions import Normal
 import numpy as np
@@ -7,7 +11,7 @@ from evotorch import Problem
 from evotorch.algorithms import SNES
 from evotorch.logging import StdOutLogger
 
-from testbed_functions import easom, cross_in_tray, egg_holder
+from objective_functions import easom, cross_in_tray, egg_holder
 from vis_utils import plot_algorithm
 
 

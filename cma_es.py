@@ -1,3 +1,6 @@
+"""
+Uses evotorch to run CMA-ES on the test objective functions.
+"""
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +9,7 @@ from evotorch import Problem
 from evotorch.algorithms import CMAES
 from evotorch.logging import StdOutLogger
 
-from testbed_functions import easom, cross_in_tray, egg_holder
+from objective_functions import easom, cross_in_tray, egg_holder
 from vis_utils import plot_algorithm
 
 

@@ -1,11 +1,16 @@
 """
 Implements a basic evolution strategy using torch,
-and tests it on the testbed functions.
+and tests it on the objective functions.
 """
-from typing import Callable, Tuple
+from typing import Callable
 
 import torch
 from torch.distributions import MultivariateNormal
+import matplotlib.pyplot as plt
+import numpy as np
+
+from objective_functions import cross_in_tray, easom, egg_holder
+from vis_utils import plot_algorithm
 
 
 class SimpleEvolutionStrategy:
@@ -50,11 +55,6 @@ class SimpleEvolutionStrategy:
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    from testbed_functions import cross_in_tray, easom, egg_holder
-    from vis_utils import plot_algorithm
 
     # obj_function = easom
     # limits = [np.pi - 4, np.pi + 4]

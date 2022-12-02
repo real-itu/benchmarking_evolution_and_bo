@@ -1,19 +1,33 @@
 """
-A series of testbed functions for optimization.
-See: https://en.wikipedia.org/wiki/Test_functions_for_optimization
+A series of testbed functions for optimization. FYI, we changed
+the functions from testing maximization instead of minimization.
+
+When run, this script plots the three example functions provided.
+
+See for more examples:
+https://en.wikipedia.org/wiki/Test_functions_for_optimization
 """
 
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+
+from vis_utils import plot_heatmap_in_ax
 
 
 def easom(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """
+    Easom is very flat, with a maxima at (pi, pi).
+    """
     return (
         torch.cos(x) * torch.cos(y) * torch.exp(-((x - np.pi) ** 2 + (y - np.pi) ** 2))
     )
 
 
 def cross_in_tray(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """
+    Cross-in-tray has several local maxima in a quilt-like pattern.
+    """
     quotient = torch.sqrt(x**2 + y**2) / np.pi
     return (
         1e-4
@@ -26,14 +40,15 @@ def cross_in_tray(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
 
 
 def egg_holder(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """
+    The egg holder is especially difficult.
+    """
     return (y + 47) * torch.sin(torch.sqrt(torch.abs(x / 2 + (y + 47)))) + (
         x * torch.sin(torch.sqrt(torch.abs(x - (y + 47))))
     )
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from vis_utils import plot_heatmap_in_ax
 
     fig = plt.figure()
     ax_easom = fig.add_subplot(131)
