@@ -39,3 +39,9 @@ if __name__ == "__main__":
 ```
 
 We provide four objective functions for testing. Running each of these scripts should give you an animation with the obj. function in the background. `exploration` is usually the (initial) standard deviation.
+
+### Playing with the Bayesian Optimization script
+
+If you run `bayesian_optimization.py`, you'll see not only the objective function, but also the GP model's predictions and the acquisition function.
+
+[TODO: add a short description of the algorithms and on B.O.]
