@@ -10,15 +10,19 @@ from evotorch import Problem
 from evotorch.algorithms import PGPE
 from evotorch.logging import StdOutLogger
 
-from objective_functions import easom, cross_in_tray, egg_holder
+from objective_functions import easom, cross_in_tray, egg_holder, shifted_sphere
 from vis_utils import plot_algorithm
 
 
 if __name__ == "__main__":
     # Defining the bounds for the specific obj. functions
-    obj_function = easom
-    limits = [np.pi - 4, np.pi + 4]
-    exploration = 1.0
+    obj_function = shifted_sphere
+    limits = [-4.0, 4.0]
+    exploration = 0.1
+
+    # obj_function = easom
+    # limits = [np.pi - 4, np.pi + 4]
+    # exploration = 1.0
 
     # obj_function = cross_in_tray
     # limits = [-10, 10]
@@ -30,7 +34,7 @@ if __name__ == "__main__":
 
     def wrapped_obj_function(inputs: torch.Tensor) -> torch.Tensor:
         """
-        A wrapper that makes obj_function only have one argument.
+        A wrapper that makes obj_function have only one argument.
         """
         return obj_function(inputs[:, 0], inputs[:, 1])
 

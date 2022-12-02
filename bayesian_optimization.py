@@ -16,7 +16,7 @@ from botorch.acquisition import ExpectedImprovement
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from objective_functions import easom, cross_in_tray, egg_holder
+from objective_functions import easom, cross_in_tray, egg_holder, shifted_sphere
 from vis_utils import plot_algorithm, plot_prediction, plot_acquisition
 
 
@@ -110,8 +110,11 @@ def run_experiment(
 
 if __name__ == "__main__":
     # Defining the bounds for the specific obj. functions
-    obj_function = easom
-    limits = [np.pi - 4, np.pi + 4]
+    obj_function = shifted_sphere
+    limits = [-4.0, 4.0]
+    
+    # obj_function = easom
+    # limits = [np.pi - 4, np.pi + 4]
 
     # obj_function = cross_in_tray
     # limits = [-10, 10]

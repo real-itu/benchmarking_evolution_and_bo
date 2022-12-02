@@ -9,7 +9,7 @@ from torch.distributions import MultivariateNormal
 import matplotlib.pyplot as plt
 import numpy as np
 
-from objective_functions import cross_in_tray, easom, egg_holder
+from objective_functions import cross_in_tray, easom, egg_holder, shifted_sphere
 from vis_utils import plot_algorithm
 
 
@@ -55,14 +55,17 @@ class SimpleEvolutionStrategy:
 
 
 if __name__ == "__main__":
+    obj_function = shifted_sphere
+    limits = [-4.0, 4.0]
+    exploration = 0.1
 
     # obj_function = easom
     # limits = [np.pi - 4, np.pi + 4]
     # exploration = 0.1
 
-    obj_function = cross_in_tray
-    limits = [-10, 10]
-    exploration = 10.0
+    # obj_function = cross_in_tray
+    # limits = [-10, 10]
+    # exploration = 10.0
 
     # obj_function = egg_holder
     # limits = [-512, 512]

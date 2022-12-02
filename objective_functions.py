@@ -48,6 +48,14 @@ def egg_holder(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
     )
 
 
+def shifted_sphere(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """
+    The usual squared norm, but shifted away from the origin by a bit.
+    Maximized at (1, 1)
+    """
+    return -((x - 1) ** 2 + (y - 1) ** 2)
+
+
 if __name__ == "__main__":
 
     fig = plt.figure()
