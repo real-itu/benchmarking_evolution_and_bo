@@ -25,8 +25,10 @@ def counted(obj_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor]):
         wrapped.calls += 1
 
         if len(x.shape) == 0:
+            # We are evaluating at a single point [x, y]
             wrapped.n_points += 1
         else:
+            # We are evaluating at a several points.
             wrapped.n_points += len(x)
 
         return obj_function(x, y)

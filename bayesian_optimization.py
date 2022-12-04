@@ -108,10 +108,10 @@ def run_experiment(
             next_best=z[-1],
         )
 
-        plt.pause(0.01)
         ax_obj_function.set_title("Obj. function")
         ax_prediction.set_title("GP prediction")
         ax_acquisition.set_title("Acq. function")
+        plt.pause(0.01)
         for ax in [ax_obj_function, ax_prediction, ax_acquisition]:
             ax.clear()
 
