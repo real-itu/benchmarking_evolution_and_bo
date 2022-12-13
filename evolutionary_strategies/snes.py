@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 from evotorch import Problem
 from evotorch.algorithms import SNES
 
-from objective_functions import ObjectiveFunction, counted
-from vis_utils import plot_algorithm
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
 if __name__ == "__main__":

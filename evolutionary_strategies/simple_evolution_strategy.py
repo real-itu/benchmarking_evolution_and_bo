@@ -9,8 +9,8 @@ from torch.distributions import MultivariateNormal
 import matplotlib.pyplot as plt
 import numpy as np
 
-from objective_functions import ObjectiveFunction, counted
-from vis_utils import plot_algorithm
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
 class SimpleEvolutionStrategy:

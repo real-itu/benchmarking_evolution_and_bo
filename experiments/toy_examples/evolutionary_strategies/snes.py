@@ -1,16 +1,16 @@
 """
-Uses evotorch to run CMA-ES on the test objective functions.
+Tests evotorch's implementation of SNES in the objective
+functions provided.
 """
 import torch
-import numpy as np
+from torch.distributions import Normal
 import matplotlib.pyplot as plt
 
 from evotorch import Problem
-from evotorch.algorithms import CMAES
-from evotorch.logging import StdOutLogger
+from evotorch.algorithms import SNES
 
-from objective_functions import ObjectiveFunction, counted
-from vis_utils import plot_algorithm
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # Hyperparameters for the search
     # Num. of generations
     n_generations = 100
-    population_size = 10
+    population_size = 100
 
     # Breaking as soon as the best fitness is this close to the actual optima
     # in absolute terms
@@ -31,6 +31,10 @@ if __name__ == "__main__":
 
     # Initial covariance, needs to be modified depending on {name}
     exploration = 0.1
+
+    # Learning rates
+    center_learning_rate = 0.1
+    std_learning_rate = 0.1
 
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
@@ -43,6 +47,7 @@ if __name__ == "__main__":
     def obj_function_counted(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return obj_function(x, y)
 
+    # Wrapping the function for evotorch.
     def wrapped_obj_function(inputs: torch.Tensor) -> torch.Tensor:
         """
         A wrapper that makes obj_function have only one argument, because that's what evotorch expects.
@@ -58,19 +63,28 @@ if __name__ == "__main__":
         vectorized=True,
     )
 
-    cmaes_searcher = CMAES(problem, stdev_init=exploration, popsize=population_size)
+    snes_searcher = SNES(
+        problem,
+        popsize=population_size,
+        stdev_init=exploration,
+        center_learning_rate=center_learning_rate,
+        stdev_learning_rate=std_learning_rate,
+    )
 
     fig, ax = plt.subplots(1, 1)
     for _ in range(n_generations):
         # Get the current best and population
-        current_best = cmaes_searcher.get_status_value("pop_best").access_values()
-        population = cmaes_searcher.population.access_values()
+        current_best = snes_searcher._get_mu()
+        current_std = snes_searcher._get_sigma()
+        population = Normal(loc=current_best, scale=current_std).sample(
+            (population_size,)
+        )
 
         # Run a step
-        cmaes_searcher.step()
+        snes_searcher.step()
 
         # Get the next best
-        next_best = cmaes_searcher.get_status_value("pop_best").access_values()
+        next_best = snes_searcher._get_mu()
 
         # Visualize
         plot_algorithm(
