@@ -2,56 +2,12 @@
 Implements a basic evolution strategy using torch,
 and tests it on the objective functions.
 """
-from typing import Callable
-
 import torch
-from torch.distributions import MultivariateNormal
 import matplotlib.pyplot as plt
-import numpy as np
 
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from evolutionary_strategies.simple_evolution_strategy import SimpleEvolutionStrategy
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
-
-
-class SimpleEvolutionStrategy:
-    def __init__(
-        self,
-        objective_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
-        population_size: int = 100,
-        exploration: float = 1.0,
-        initial_best: torch.Tensor = torch.Tensor([0.0, 0.0]),
-    ) -> None:
-        self.objective_function = objective_function
-        self.population_size = population_size
-
-        # Setting up the initial mean and fixed covariance
-        self.best = initial_best
-        self.covar = exploration * torch.eye(2)
-
-        # Setting up the population's distribution
-        self.population_distribution = MultivariateNormal(
-            loc=self.best, covariance_matrix=self.covar
-        )
-
-    def step(self) -> torch.Tensor:
-        """
-        Samples from the current population distribution,
-        and saves the best candidate in the mean. It also returns
-        the samples.
-        """
-        # Sample and evaluate
-        samples = self.population_distribution.sample((self.population_size,))
-        fitnesses = self.objective_function(samples[:, 0], samples[:, 1])
-
-        # next one's the best in fitness
-        self.best = samples[torch.argmax(fitnesses)]
-
-        # Re-defining the population distribution
-        self.population_distribution = MultivariateNormal(
-            loc=self.best, covariance_matrix=self.covar
-        )
-
-        return samples
 
 
 if __name__ == "__main__":
@@ -79,21 +35,16 @@ if __name__ == "__main__":
     obj_function = objective.function
     limits = objective.limits
 
-    # Counting the evaluations of the objective function
-    @counted
-    def obj_function_counted(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return obj_function(x, y)
-
     simple_evo = SimpleEvolutionStrategy(
-        objective_function=obj_function_counted,
-        exploration=exploration,
+        objective_function=obj_function,
         population_size=population_size,
+        exploration=exploration,
     )
-    fig, ax = plt.subplots(1, 1)
 
+    fig, ax = plt.subplots(1, 1)
     for _ in range(n_generations):
         # Save the current mean for plotting
-        current_mean = simple_evo.best
+        current_mean = simple_evo.get_current_best()
 
         # Run a step
         samples = simple_evo.step()
@@ -112,7 +63,7 @@ if __name__ == "__main__":
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(*simple_evo.best)
+        best_fitness = obj_function(simple_evo.get_current_best())
         print(f"Best fitness: {best_fitness}")
 
         if (
@@ -123,5 +74,5 @@ if __name__ == "__main__":
             break
 
     print(
-        f"The obj. function was evaluated in {obj_function_counted.n_points} points ({obj_function_counted.calls} calls)"
+        f"The obj. function was evaluated in {simple_evo.objective_function.n_points} points ({simple_evo.objective_function.calls} calls)"
     )

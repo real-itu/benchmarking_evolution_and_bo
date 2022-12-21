@@ -1,12 +1,10 @@
 """
 A common interface for evolutionary strategies.
 """
-from typing import Callable, Iterable
+from typing import Callable
 
 import torch
 
-# TODO: I think this interface is a great moment
-# to add this counter. Let's see.
 from utils.wrappers.counters import counted
 
 

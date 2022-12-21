@@ -3,13 +3,10 @@ Tests evotorch's implementation of SNES in the objective
 functions provided.
 """
 import torch
-from torch.distributions import Normal
 import matplotlib.pyplot as plt
 
-from evotorch import Problem
-from evotorch.algorithms import SNES
-
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from evolutionary_strategies.snes import SNES
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
@@ -41,50 +38,27 @@ if __name__ == "__main__":
     objective = ObjectiveFunction(name)
     obj_function = objective.function
     limits = objective.limits
+    solution_length = objective.solution_length
 
-    # Counting the evaluations of the objective function
-    @counted
-    def obj_function_counted(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return obj_function(x, y)
-
-    # Wrapping the function for evotorch.
-    def wrapped_obj_function(inputs: torch.Tensor) -> torch.Tensor:
-        """
-        A wrapper that makes obj_function have only one argument, because that's what evotorch expects.
-        """
-        return obj_function_counted(inputs[:, 0], inputs[:, 1])
-
-    # Defining the problem in evotorch
-    problem = Problem(
-        "max",
-        objective_func=wrapped_obj_function,
-        initial_bounds=limits,
-        solution_length=2,
-        vectorized=True,
-    )
-
-    snes_searcher = SNES(
-        problem,
-        popsize=population_size,
-        stdev_init=exploration,
-        center_learning_rate=center_learning_rate,
-        stdev_learning_rate=std_learning_rate,
+    pgpe = SNES(
+        objective_function=obj_function,
+        population_size=population_size,
+        exploration=exploration,
+        solution_length=solution_length,
+        limits=limits,
     )
 
     fig, ax = plt.subplots(1, 1)
     for _ in range(n_generations):
         # Get the current best and population
-        current_best = snes_searcher._get_mu()
-        current_std = snes_searcher._get_sigma()
-        population = Normal(loc=current_best, scale=current_std).sample(
-            (population_size,)
-        )
+        current_best = pgpe.get_current_best()
+        population = pgpe.get_population()
 
         # Run a step
-        snes_searcher.step()
+        pgpe.step()
 
         # Get the next best
-        next_best = snes_searcher._get_mu()
+        next_best = pgpe.get_current_best()
 
         # Visualize
         plot_algorithm(
@@ -100,7 +74,7 @@ if __name__ == "__main__":
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(*next_best)
+        best_fitness = obj_function(next_best)
         print(f"Best fitness: {best_fitness}")
 
         if (
@@ -111,5 +85,5 @@ if __name__ == "__main__":
             break
 
     print(
-        f"The obj. function was evaluated in {obj_function_counted.n_points} points ({obj_function_counted.calls} calls)"
+        f"The obj. function was evaluated in {pgpe.objective_function.n_points} points ({pgpe.objective_function.calls} calls)"
     )
