@@ -4,7 +4,7 @@ Uses evotorch to run CMA-ES on the test objective functions.
 import torch
 import matplotlib.pyplot as plt
 
-from evolutionary_strategies.cma_es import CMA_ES
+from search_algorithms.evolutionary_strategies.cma_es import CMA_ES
 
 from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm

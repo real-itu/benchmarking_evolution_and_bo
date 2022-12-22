@@ -5,7 +5,9 @@ and tests it on the objective functions.
 import torch
 import matplotlib.pyplot as plt
 
-from evolutionary_strategies.simple_evolution_strategy import SimpleEvolutionStrategy
+from search_algorithms.evolutionary_strategies.simple_evolution_strategy import (
+    SimpleEvolutionStrategy,
+)
 from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 

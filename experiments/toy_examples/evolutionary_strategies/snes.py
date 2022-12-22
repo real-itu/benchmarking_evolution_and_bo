@@ -5,7 +5,7 @@ functions provided.
 import torch
 import matplotlib.pyplot as plt
 
-from evolutionary_strategies.snes import SNES
+from search_algorithms.evolutionary_strategies.snes import SNES
 from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 

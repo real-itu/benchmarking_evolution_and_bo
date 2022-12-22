@@ -4,7 +4,7 @@ Uses evotorch to run PGPE on the test objective functions.
 import torch
 import matplotlib.pyplot as plt
 
-from evolutionary_strategies.pgpe import PGPE
+from search_algorithms.evolutionary_strategies.pgpe import PGPE
 from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
