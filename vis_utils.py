@@ -42,10 +42,14 @@ def plot_heatmap_in_ax(
     """
     X = torch.linspace(min_, max_, 100)
     Y = torch.linspace(min_, max_, 100)
-    X, Y = torch.meshgrid(X, Y)
-    res = function(X, Y)
 
-    ax.imshow(res, extent=[min_, max_, min_, max_])
+    fine_grid = torch.Tensor([[x, y] for x, y in product(X, Y)])
+
+    res_img = _image_from_values(
+        function(fine_grid[:, 0], fine_grid[:, 1]), [min_, max_], 100
+    )
+
+    ax.imshow(res_img, extent=[min_, max_, min_, max_])
 
 
 def plot_algorithm(
@@ -126,7 +130,7 @@ def plot_prediction(
     means = predicted_distribution.mean
     means_as_img = _image_from_values(means, limits, n_points_in_grid)
 
-    plot = ax.imshow(means_as_img, extent=[*limits, *limits], cmap="Blues")
+    plot = ax.imshow(means_as_img, extent=[*limits, *limits])
     ax.scatter(z[:, 0], z[:, 1], c="white", edgecolors="black")
     ax.scatter([z[-1, 0]], [z[-1, 1]], c="red", edgecolors="black")
     ax.scatter([candidate[0]], [candidate[1]], c="blue", edgecolors="black")

@@ -16,13 +16,13 @@ from botorch.acquisition import ExpectedImprovement
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from objective_functions import easom, cross_in_tray, egg_holder, shifted_sphere
+from objective_functions import ObjectiveFunction, counted
 from vis_utils import plot_algorithm, plot_prediction, plot_acquisition
 
 
 def bayesian_optimization_iteration(
     z: torch.Tensor,
-    objective_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
+    obj_values: torch.Tensor,
     limits: Tuple[float, float],
     ax_prediction: plt.Axes,
     ax_acquisition: plt.Axes,
@@ -30,9 +30,6 @@ def bayesian_optimization_iteration(
     """
     Runs a B.O. iteration and returns the next candidate and its value.
     """
-    # Calling the obj function on all values.
-    obj_values = objective_function(z[:, 0], z[:, 1]).unsqueeze(1)
-
     # Defining the Gaussian Process
     kernel = gpytorch.kernels.MaternKernel()
     model = SingleTaskGP(z, obj_values, covar_module=kernel)
@@ -61,9 +58,10 @@ def bayesian_optimization_iteration(
 
 
 def run_experiment(
-    obj_function: Callable[[torch.Tensor, torch.Tensor], torch.Tensor],
-    limits: Tuple[float, float],
+    objective: ObjectiveFunction,
     n_iterations: int = 100,
+    tolerance_for_optima: float = 1e-3,
+    break_when_close_to_optima: bool = True,
 ):
     """
     Runs Bayesian Optimization over the given acquisition function.
@@ -71,26 +69,33 @@ def run_experiment(
 
     It returns the pair (best_z, best_obj_value).
     """
+    obj_function = objective.function
+    limits = objective.limits
+
+    # Counting the evaluations of the objective function
+    @counted
+    def obj_function_counted(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return obj_function(x, y)
+
     # Initialize with the origin
     z = torch.Tensor([[0.0, 0.0]])
+    obj_values = obj_function_counted(z[:, 0], z[:, 1]).unsqueeze(1)
 
     _, (ax_obj_function, ax_prediction, ax_acquisition) = plt.subplots(
         1, 3, figsize=(3 * 6, 6)
     )
-    ax_obj_function.set_title("Obj. function")
-    ax_prediction.set_title("GP prediction")
-    ax_acquisition.set_title("Acq. function")
     for i in range(n_iterations):
         candidate = bayesian_optimization_iteration(
             z=z,
-            objective_function=obj_function,
+            obj_values=obj_values,
             limits=limits,
             ax_prediction=ax_prediction,
             ax_acquisition=ax_acquisition,
         )
-        print(
-            f"(Iteration {i+1}) tested {candidate} and got {obj_function(candidate[0], candidate[1])}"
-        )
+        obj_value_at_candidate = obj_function_counted(*candidate)
+        obj_values = torch.vstack((obj_values, obj_value_at_candidate))
+
+        print(f"(Iteration {i+1}) tested {candidate} and got {obj_value_at_candidate}")
 
         z = torch.vstack((z, candidate))
 
@@ -103,23 +108,49 @@ def run_experiment(
             next_best=z[-1],
         )
 
+        ax_obj_function.set_title("Obj. function")
+        ax_prediction.set_title("GP prediction")
+        ax_acquisition.set_title("Acq. function")
         plt.pause(0.01)
         for ax in [ax_obj_function, ax_prediction, ax_acquisition]:
             ax.clear()
 
+        if (
+            torch.isclose(
+                obj_value_at_candidate, objective.optima, atol=tolerance_for_optima
+            )
+            and break_when_close_to_optima
+        ):
+            print(f"Found a good-enough optima, breaking.")
+            break
+
+    print(
+        f"The obj. function was evaluated in {obj_function_counted.n_points} points ({obj_function_counted.calls} calls)"
+    )
+
 
 if __name__ == "__main__":
-    # Defining the bounds for the specific obj. functions
-    obj_function = shifted_sphere
-    limits = [-4.0, 4.0]
-    
-    # obj_function = easom
-    # limits = [np.pi - 4, np.pi + 4]
+    # Defining the function to optimize
+    name = "shifted_sphere"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
 
-    # obj_function = cross_in_tray
-    # limits = [-10, 10]
+    # Hyperparameters for the search
+    # Num. of generations/iterations
+    n_generations = 100
 
-    # obj_function = egg_holder
-    # limits = [-512, 512]
+    # Breaking as soon as the best fitness is this close to the actual optima
+    # in absolute terms
+    tolerance_for_optima = 1e-3
 
-    run_experiment(obj_function=obj_function, limits=limits)
+    # Do we actually want to break?
+    break_when_close_to_optima = True
+
+    # Defining the objective function, limits, and so on...
+    # They are all contained in the ObjectiveFunction class
+    objective = ObjectiveFunction(name)
+
+    run_experiment(
+        objective=objective,
+        n_iterations=n_generations,
+        tolerance_for_optima=tolerance_for_optima,
+        break_when_close_to_optima=break_when_close_to_optima,
+    )
