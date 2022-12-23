@@ -16,6 +16,10 @@ conda activate evo-benchmark
 pip install -r requirements.txt
 ```
 
+### Add the working folder to your PYTHONPATH
+
+...
+
 ## Play with the evolution scripts
 
 The objective functions are implemented in `objective_functions.py`, and are wrapped by a single class that abstracts properties like `limits` and `optima_location` for each one of them. Check the implmenentation of `ObjectiveFunction` therein.
