@@ -17,7 +17,7 @@ from utils.visualization.evolutionary_strategies import plot_algorithm
 
 if __name__ == "__main__":
     # Defining the function to optimize
-    name = "shifted_sphere"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
+    name = "easom"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
 
     # Hyperparameters for the search
     # Num. of generations/iterations
