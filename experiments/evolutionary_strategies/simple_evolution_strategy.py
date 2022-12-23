@@ -1,11 +1,14 @@
 """
-Uses evotorch to run PGPE on the test objective functions.
+Implements a basic evolution strategy using torch,
+and tests it on the objective functions.
 """
 import torch
 import matplotlib.pyplot as plt
 
-from search_algorithms.evolutionary_strategies.pgpe import PGPE
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
+from search_algorithms.evolutionary_strategies.simple_evolution_strategy import (
+    SimpleEvolutionStrategy,
+)
+from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
@@ -14,12 +17,12 @@ if __name__ == "__main__":
     name = "easom"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
 
     # Hyperparameters for the search
-    # Num. of generations
+    # Num. of generations and population size
     n_generations = 100
     population_size = 100
 
     # Breaking as soon as the best fitness is this close to the actual optima
-    # in absolute terms
+    # in absolute terms.
     tolerance_for_optima = 1e-3
 
     # Do we actually want to break?
@@ -33,43 +36,36 @@ if __name__ == "__main__":
     objective = ObjectiveFunction(name)
     obj_function = objective.function
     limits = objective.limits
-    solution_length = objective.solution_length
 
-    pgpe = PGPE(
+    simple_evo = SimpleEvolutionStrategy(
         objective_function=obj_function,
         population_size=population_size,
         exploration=exploration,
-        solution_length=solution_length,
-        limits=limits,
     )
 
     fig, ax = plt.subplots(1, 1)
     for _ in range(n_generations):
-        # Get the current best and population
-        current_best = pgpe.get_current_best()
-        population = pgpe.get_population()
+        # Save the current mean for plotting
+        current_mean = simple_evo.get_current_best()
 
         # Run a step
-        pgpe.step()
-
-        # Get the next best
-        next_best = pgpe.get_current_best()
+        samples = simple_evo.step()
 
         # Visualize
         plot_algorithm(
             ax=ax,
             obj_function=obj_function,
             limits=limits,
-            current_best=current_best,
-            population=population,
-            next_best=next_best,
+            current_best=current_mean,
+            population=samples,
+            next_best=simple_evo.best,
         )
 
         plt.pause(0.01)
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(next_best)
+        best_fitness = obj_function(simple_evo.get_current_best())
         print(f"Best fitness: {best_fitness}")
 
         if (
@@ -80,5 +76,5 @@ if __name__ == "__main__":
             break
 
     print(
-        f"The obj. function was evaluated in {pgpe.objective_function.n_points} points ({pgpe.objective_function.calls} calls)"
+        f"The obj. function was evaluated in {simple_evo.objective_function.n_points} points ({simple_evo.objective_function.calls} calls)"
     )
