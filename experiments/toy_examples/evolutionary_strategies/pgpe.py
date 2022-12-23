@@ -1,16 +1,12 @@
 """
-Uses evotorch to run CMA-ES on the test objective functions.
+Uses evotorch to run PGPE on the test objective functions.
 """
 import torch
-import numpy as np
 import matplotlib.pyplot as plt
 
-from evotorch import Problem
-from evotorch.algorithms import CMAES
-from evotorch.logging import StdOutLogger
-
-from objective_functions import ObjectiveFunction, counted
-from vis_utils import plot_algorithm
+from evolutionary_strategies.pgpe import PGPE
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
+from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
 if __name__ == "__main__":
@@ -20,7 +16,7 @@ if __name__ == "__main__":
     # Hyperparameters for the search
     # Num. of generations
     n_generations = 100
-    population_size = 10
+    population_size = 100
 
     # Breaking as soon as the best fitness is this close to the actual optima
     # in absolute terms
@@ -37,40 +33,27 @@ if __name__ == "__main__":
     objective = ObjectiveFunction(name)
     obj_function = objective.function
     limits = objective.limits
+    solution_length = objective.solution_length
 
-    # Counting the evaluations of the objective function
-    @counted
-    def obj_function_counted(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return obj_function(x, y)
-
-    def wrapped_obj_function(inputs: torch.Tensor) -> torch.Tensor:
-        """
-        A wrapper that makes obj_function have only one argument, because that's what evotorch expects.
-        """
-        return obj_function_counted(inputs[:, 0], inputs[:, 1])
-
-    # Defining the problem in evotorch
-    problem = Problem(
-        "max",
-        objective_func=wrapped_obj_function,
-        initial_bounds=limits,
-        solution_length=2,
-        vectorized=True,
+    pgpe = PGPE(
+        objective_function=obj_function,
+        population_size=population_size,
+        exploration=exploration,
+        solution_length=solution_length,
+        limits=limits,
     )
-
-    cmaes_searcher = CMAES(problem, stdev_init=exploration, popsize=population_size)
 
     fig, ax = plt.subplots(1, 1)
     for _ in range(n_generations):
         # Get the current best and population
-        current_best = cmaes_searcher.get_status_value("pop_best").access_values()
-        population = cmaes_searcher.population.access_values()
+        current_best = pgpe.get_current_best()
+        population = pgpe.get_population()
 
         # Run a step
-        cmaes_searcher.step()
+        pgpe.step()
 
         # Get the next best
-        next_best = cmaes_searcher.get_status_value("pop_best").access_values()
+        next_best = pgpe.get_current_best()
 
         # Visualize
         plot_algorithm(
@@ -86,7 +69,7 @@ if __name__ == "__main__":
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(*next_best)
+        best_fitness = obj_function(next_best)
         print(f"Best fitness: {best_fitness}")
 
         if (
@@ -97,5 +80,5 @@ if __name__ == "__main__":
             break
 
     print(
-        f"The obj. function was evaluated in {obj_function_counted.n_points} points ({obj_function_counted.calls} calls)"
+        f"The obj. function was evaluated in {pgpe.objective_function.n_points} points ({pgpe.objective_function.calls} calls)"
     )

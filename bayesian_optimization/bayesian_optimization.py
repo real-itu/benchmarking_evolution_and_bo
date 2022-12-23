@@ -16,8 +16,12 @@ from botorch.acquisition import ExpectedImprovement
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from objective_functions import ObjectiveFunction, counted
-from vis_utils import plot_algorithm, plot_prediction, plot_acquisition
+from experiments.toy_examples.toy_objective_functions import ObjectiveFunction, counted
+from utils.visualization.evolutionary_strategies import (
+    plot_algorithm,
+    plot_prediction,
+    plot_acquisition,
+)
 
 
 def bayesian_optimization_iteration(
