@@ -10,7 +10,7 @@ import gpytorch
 
 from search_algorithms.bayesian_optimization import BayesianOptimization
 
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
+from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 
 from utils.visualization.evolutionary_strategies import plot_algorithm
 

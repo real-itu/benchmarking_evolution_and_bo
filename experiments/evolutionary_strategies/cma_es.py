@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from search_algorithms.evolutionary_strategies.cma_es import CMA_ES
 
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
+from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
 if __name__ == "__main__":
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     break_when_close_to_optima = True
 
     # Initial covariance, needs to be modified depending on {name}
-    exploration = 0.1
+    exploration = 0.2
 
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class

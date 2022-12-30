@@ -1,12 +1,11 @@
 """
-Tests evotorch's implementation of SNES in the objective
-functions provided.
+Uses evotorch to run PGPE on the test objective functions.
 """
 import torch
 import matplotlib.pyplot as plt
 
-from search_algorithms.evolutionary_strategies.snes import SNES
-from experiments.toy_examples.toy_objective_functions import ObjectiveFunction
+from search_algorithms.evolutionary_strategies.pgpe import PGPE
+from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
 
@@ -29,10 +28,6 @@ if __name__ == "__main__":
     # Initial covariance, needs to be modified depending on {name}
     exploration = 0.1
 
-    # Learning rates
-    center_learning_rate = 0.1
-    std_learning_rate = 0.1
-
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
     objective = ObjectiveFunction(name)
@@ -40,7 +35,7 @@ if __name__ == "__main__":
     limits = objective.limits
     solution_length = objective.solution_length
 
-    pgpe = SNES(
+    pgpe = PGPE(
         objective_function=obj_function,
         population_size=population_size,
         exploration=exploration,
