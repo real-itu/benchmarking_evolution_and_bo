@@ -1,18 +1,14 @@
 """
-Implements the toy examples for Bayesian Optimization.
+Implements the toy examples for random search
 """
-
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 import torch
 
-import gpytorch
-
-from search_algorithms.bayesian_optimization import BayesianOptimization
+from search_algorithms import RandomSearch
 
 from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 
 from utils.visualization.evolutionary_strategies import plot_algorithm
-
 
 if __name__ == "__main__":
     # Defining the function to optimize
@@ -20,7 +16,7 @@ if __name__ == "__main__":
 
     # Hyperparameters for the search
     # Num. of generations/iterations
-    n_iterations = 100
+    n_iterations = 1000
 
     # Breaking as soon as the best fitness is this close to the actual optima
     # in absolute terms
@@ -36,39 +32,33 @@ if __name__ == "__main__":
     limits = objective.limits
     solution_length = objective.solution_length
 
-    bayes_opt = BayesianOptimization(
+    random_search = RandomSearch(
         objective_function=obj_function,
         max_iterations=n_iterations,
         limits=limits,
-        kernel=gpytorch.kernels.MaternKernel,
     )
 
-    _, (ax_obj_function, ax_prediction, ax_acquisition) = plt.subplots(
-        1, 3, figsize=(3 * 6, 6)
-    )
+    _, ax = plt.subplots(1, 1, figsize=(6, 6))
     for _ in range(n_iterations):
-        bayes_opt.step(
-            ax_for_prediction=ax_prediction, ax_for_acquisition=ax_acquisition
-        )
+        random_search.step()
 
         plot_algorithm(
-            ax=ax_obj_function,
+            ax=ax,
             obj_function=obj_function,
             limits=limits,
-            current_best=bayes_opt.trace[-2],
-            population=bayes_opt.trace,
-            next_best=bayes_opt.trace[-1],
+            current_best=random_search.trace[-2]
+            if len(random_search.trace) > 2
+            else random_search.trace[-1],
+            population=random_search.trace,
+            next_best=random_search.trace[-1],
         )
 
-        ax_obj_function.set_title("Obj. function")
-        ax_prediction.set_title("GP prediction")
-        ax_acquisition.set_title("Acq. function")
+        ax.set_title("Obj. function")
         plt.pause(0.01)
-        for ax in [ax_obj_function, ax_prediction, ax_acquisition]:
-            ax.clear()
+        ax.clear()
 
         # (uncounted) best fitness evaluation
-        current_fitness = obj_function(bayes_opt.trace[-1])
+        current_fitness = obj_function(random_search.trace[-1])
         print(f"Current fitness: {current_fitness}")
         if (
             torch.isclose(current_fitness, objective.optima, atol=tolerance_for_optima)
@@ -78,5 +68,5 @@ if __name__ == "__main__":
             break
 
     print(
-        f"The obj. function was evaluated in {bayes_opt.objective_function.n_points} points ({bayes_opt.objective_function.calls} calls)"
+        f"The obj. function was evaluated in {random_search.objective_function.n_points} points ({random_search.objective_function.calls} calls)"
     )
