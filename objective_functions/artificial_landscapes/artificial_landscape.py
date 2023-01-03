@@ -14,67 +14,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils.visualization.evolutionary_strategies import plot_heatmap_in_ax
+from .definitions import (
+    easom,
+    cross_in_tray,
+    shifted_sphere,
+    egg_holder,
+    ackley_function_01,
+)
 
 
-def easom(xy: torch.Tensor) -> torch.Tensor:
+class ArtificialLandscape:
     """
-    Easom is very flat, with a maxima at (pi, pi).
-    """
-    x = xy[..., 0]
-    y = xy[..., 1]
-    return (
-        torch.cos(x) * torch.cos(y) * torch.exp(-((x - np.pi) ** 2 + (y - np.pi) ** 2))
-    )
-
-
-def cross_in_tray(xy: torch.Tensor) -> torch.Tensor:
-    """
-    Cross-in-tray has several local maxima in a quilt-like pattern.
-    """
-    x = xy[..., 0]
-    y = xy[..., 1]
-    quotient = torch.sqrt(x**2 + y**2) / np.pi
-    return (
-        1e-4
-        * (
-            torch.abs(torch.sin(x) * torch.sin(y) * torch.exp(torch.abs(10 - quotient)))
-            + 1
-        )
-        ** 0.1
-    )
-
-
-def egg_holder(xy: torch.Tensor) -> torch.Tensor:
-    """
-    The egg holder is especially difficult.
-    """
-    x = xy[..., 0]
-    y = xy[..., 1]
-    return (y + 47) * torch.sin(torch.sqrt(torch.abs(x / 2 + (y + 47)))) + (
-        x * torch.sin(torch.sqrt(torch.abs(x - (y + 47))))
-    )
-
-
-def shifted_sphere(xy: torch.Tensor) -> torch.Tensor:
-    """
-    The usual squared norm, but shifted away from the origin by a bit.
-    Maximized at (1, 1)
-    """
-    x = xy[..., 0]
-    y = xy[..., 1]
-    return -((x - 1) ** 2 + (y - 1) ** 2)
-
-
-class ObjectiveFunction:
-    """
-    This class will contain the objective function, the limits,
+    This class will contain the toy objective functions, their limits,
     and the optima location.
+
+    For more information, check definitions.py and [1].
+
+    [1]:  https://al-roomi.org/benchmarks/unconstrained/n-dimensions
     """
 
     def __init__(
-        self, name: Literal["shifted_sphere", "easom", "cross_in_tray", "egg_holder"]
+        self,
+        name: Literal[
+            "ackley_function_01",
+            "shifted_sphere",
+            "easom",
+            "cross_in_tray",
+            "egg_holder",
+        ],
+        n_dims: int = 2,
     ) -> None:
-        if name == "shifted_sphere":
+        if name == "ackley_function_01":
+            self.function = ackley_function_01
+            self.limits = [-32.0, 32.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "shifted_sphere":
             self.function = shifted_sphere
             self.limits = [-4.0, 4.0]
             self.optima_location = torch.Tensor([1.0, 1.0])

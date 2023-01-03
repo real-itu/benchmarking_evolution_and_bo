@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 
 from search_algorithms.evolutionary_strategies.cma_es import CMA_ES
 
-from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
+from objective_functions.artificial_landscapes.artificial_landscape import (
+    ArtificialLandscape,
+)
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
 if __name__ == "__main__":
@@ -30,7 +32,7 @@ if __name__ == "__main__":
 
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
-    objective = ObjectiveFunction(name)
+    objective = ArtificialLandscape(name)
     obj_function = objective.function
     limits = objective.limits
     solution_length = objective.solution_length

@@ -15,7 +15,9 @@ from botorch.acquisition import ExpectedImprovement, AcquisitionFunction
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
+from objective_functions.artificial_landscapes.artificial_landscape import (
+    ArtificialLandscape,
+)
 from utils.visualization.evolutionary_strategies import plot_algorithm
 from utils.visualization.bayesian_optimization import plot_prediction, plot_acquisition
 from utils.wrappers.counters import counted
