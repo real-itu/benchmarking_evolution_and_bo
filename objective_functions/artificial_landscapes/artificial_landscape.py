@@ -20,6 +20,12 @@ from .definitions import (
     shifted_sphere,
     egg_holder,
     ackley_function_01,
+    alpine_01,
+    alpine_02,
+    bent_cigar,
+    brown,
+    chung_reynolds,
+    cosine_mixture,
 )
 
 
@@ -37,6 +43,11 @@ class ArtificialLandscape:
         self,
         name: Literal[
             "ackley_function_01",
+            "alpine_01",
+            "alpine_02",
+            "bent_cigar",
+            "brown",
+            "chung_reynolds",
             "shifted_sphere",
             "easom",
             "cross_in_tray",
@@ -47,6 +58,36 @@ class ArtificialLandscape:
         if name == "ackley_function_01":
             self.function = ackley_function_01
             self.limits = [-32.0, 32.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "alpine_01":
+            self.function = alpine_01
+            self.limits = [-10.0, 10.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "alpine_02":
+            self.function = alpine_02
+            self.limits = [0.0, 10.0]
+            self.optima_location = torch.Tensor([7.9170526982459462172] * n_dims)
+            self.solution_length = n_dims
+        elif name == "bent_cigar":
+            self.function = bent_cigar
+            self.limits = [-100.0, 100.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "brown":
+            self.function = brown
+            self.limits = [-1.0, 4.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "chung_reynolds":
+            self.function = chung_reynolds
+            self.limits = [-100.0, 100.0]
+            self.optima_location = torch.Tensor([0.0] * n_dims)
+            self.solution_length = n_dims
+        elif name == "cosine_mixture":
+            self.function = cosine_mixture
+            self.limits = [-1.0, 1.0]
             self.optima_location = torch.Tensor([0.0] * n_dims)
             self.solution_length = n_dims
         elif name == "shifted_sphere":

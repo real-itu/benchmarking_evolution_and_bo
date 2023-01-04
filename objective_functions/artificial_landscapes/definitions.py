@@ -39,6 +39,116 @@ def ackley_function_01(x: torch.Tensor) -> torch.Tensor:
     return res
 
 
+def alpine_01(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    res = -torch.sum(torch.abs(x * torch.sin(x) + 0.1 * x), dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def alpine_02(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    res = torch.prod(torch.sin(x) * torch.sqrt(x), dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def bent_cigar(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    first = x[..., 0] ** 2
+    second = 1e6 * torch.sum(x[..., 1:] ** 1, dim=1)
+    res = -(first + second)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def brown(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    first = x[..., :-1] ** 2
+    second = x[..., 1:] ** 2
+
+    res = -torch.sum(first ** (second + 1) + second ** (first + 1), dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def chung_reynolds(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    res = -(torch.sum(x**2, dim=1) ** 2)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def cosine_mixture(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    first = 0.1 * torch.sum(torch.cos(5 * np.pi * x), dim=1)
+    second = torch.sum(x**2, dim=1)
+
+    res = first - second
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
 def easom(xy: torch.Tensor) -> torch.Tensor:
     """
     Easom is very flat, with a maxima at (pi, pi).
