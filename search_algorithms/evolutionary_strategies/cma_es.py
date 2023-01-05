@@ -11,7 +11,8 @@ from evotorch import Problem
 from evotorch.algorithms import CMAES as CMAES_from_evotorch
 
 from .evolutionary_strategy import EvolutionaryStrategy
-from utils.wrappers.counters import counted
+
+from objective_functions.objective_function import ObjectiveFunction
 
 
 class CMA_ES(EvolutionaryStrategy):

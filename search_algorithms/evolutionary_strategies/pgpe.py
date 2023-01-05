@@ -14,6 +14,8 @@ from evotorch.algorithms import PGPE as PGPE_from_evotorch
 
 from .evolutionary_strategy import EvolutionaryStrategy
 
+from objective_functions.objective_function import ObjectiveFunction
+
 
 class PGPE(EvolutionaryStrategy):
     """
@@ -22,7 +24,7 @@ class PGPE(EvolutionaryStrategy):
 
     def __init__(
         self,
-        objective_function: Callable[[torch.Tensor], torch.Tensor],
+        objective_function: ObjectiveFunction,
         population_size: int,
         exploration: float,
         solution_length: int,

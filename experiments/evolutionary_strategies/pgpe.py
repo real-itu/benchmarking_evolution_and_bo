@@ -10,10 +10,13 @@ from objective_functions.artificial_landscapes.artificial_landscape import (
 )
 from utils.visualization.evolutionary_strategies import plot_algorithm
 
+from objective_functions.objective_function import ObjectiveFunction
 
 if __name__ == "__main__":
     # Defining the function to optimize
     name = "easom"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
+    model = None  # None, "small", "medium", "large"
+    n_dims = 2  # Whatever int your mind desires (in most cases)
 
     # Hyperparameters for the search
     # Num. of generations
@@ -32,13 +35,15 @@ if __name__ == "__main__":
 
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
-    objective = ArtificialLandscape(name)
+    objective = ObjectiveFunction(name, n_dims=n_dims, model=model)
     obj_function = objective.function
+
+    # Taking whatever limits the ObjectiveFunction specified internally.
     limits = objective.limits
     solution_length = objective.solution_length
 
     pgpe = PGPE(
-        objective_function=obj_function,
+        objective_function=objective,
         population_size=population_size,
         exploration=exploration,
         solution_length=solution_length,

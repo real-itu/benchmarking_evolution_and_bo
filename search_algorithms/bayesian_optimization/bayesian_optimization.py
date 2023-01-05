@@ -59,7 +59,7 @@ class BayesianOptimization:
 
     def step(
         self,
-        n_points_in_acq_grid: int = 200,
+        n_points_in_acq_grid: int = 400,
         ax_for_prediction: plt.Axes = None,
         ax_for_acquisition: plt.Axes = None,
     ):

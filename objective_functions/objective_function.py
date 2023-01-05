@@ -12,30 +12,47 @@ self.problem = Problem(
 from typing import Callable, Tuple, Union
 
 import torch
+import numpy as np
+
+from .artificial_landscapes.artificial_landscape import (
+    ArtificialLandscape,
+    POSSIBLE_FUNCTIONS,
+)
 
 
-class ObjectiveFunction:
+class ObjectiveFunction(ArtificialLandscape):
     def __init__(
         self,
         name: str,
-        n_dims: int,
-        maximize: bool = True,
+        n_dims: int = None,
         limits: Tuple[float, float] = None,
+        maximize: bool = True,
         model: Callable[[torch.Tensor], torch.Tensor] = None,
         device: torch.device = "cpu",
     ) -> None:
-        self.name = name
-        self.function = None
-        self.ndims = n_dims
-        self.maximize = maximize
-        self.limits = limits
+        if name in POSSIBLE_FUNCTIONS:
+            # We are defining an artificial landscape
+            assert (
+                maximize
+            ), "We have only implemented the maximization of artificial landscapes :("
 
-        if isinstance(model, torch.nn.Module):
-            self.model = model.to(device)
+            super().__init__(name=name, n_dims=n_dims)
+            self.known_optima: bool = True
+            self.maximize: bool = True
+
         else:
-            self.model = model
+            # We are defining an RL task
+            if isinstance(model, torch.nn.Module):
+                assert (
+                    n_dims is None
+                ), "You are defining an RL task. Why are you providing n_dims?"
 
-        self.device = device
+                self.model = model.to(device)
+                self.n_dims = sum(p.numel() for p in model.parameters())
+            else:
+                self.model = model
+                self.n_dims = n_dims
 
-    def evaluate_objective(x: torch.Tensor) -> torch.Tensor:
-        raise NotImplementedError
+            self.known_optima: bool = False
+            self.maximize: bool = True
+            self.limits = limits
