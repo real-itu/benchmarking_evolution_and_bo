@@ -3,7 +3,6 @@ Implements the toy examples for Bayesian Optimization.
 """
 
 from matplotlib import pyplot as plt
-
 import torch
 
 import gpytorch
