@@ -14,6 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils.visualization.evolutionary_strategies import plot_heatmap_in_ax
+
+from objective_functions.objective_function import ObjectiveFunction
+
 from .definitions import (
     easom,
     cross_in_tray,
@@ -42,7 +45,7 @@ POSSIBLE_FUNCTIONS = [
 ]
 
 
-class ArtificialLandscape:
+class ArtificialLandscape(ObjectiveFunction):
     """
     This class will contain the toy objective functions, their limits,
     and the optima location.
@@ -129,6 +132,9 @@ class ArtificialLandscape:
             )
 
         self.optima = self.function(self.optima_location)
+
+    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor:
+        return self.function(x)
 
 
 if __name__ == "__main__":

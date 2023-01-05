@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
     objective = ArtificialLandscape(name)
-    obj_function = objective.function
+    obj_function = objective.evaluate_objective
     limits = objective.limits
     solution_length = objective.solution_length
 
