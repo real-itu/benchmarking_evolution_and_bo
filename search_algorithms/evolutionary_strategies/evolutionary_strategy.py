@@ -7,11 +7,13 @@ import torch
 
 from utils.wrappers.counters import counted
 
+from objective_functions.objective_function import ObjectiveFunction
+
 
 class EvolutionaryStrategy:
     def __init__(
         self,
-        objective_function: Callable[[torch.Tensor], torch.Tensor],
+        objective_function: ObjectiveFunction,
         population_size: int,
     ):
         # Wraps the objective function in a counter. After this
@@ -21,7 +23,7 @@ class EvolutionaryStrategy:
         # was evaluated
         @counted
         def counted_objective_function(inputs: torch.Tensor):
-            return objective_function(inputs)
+            return objective_function.evaluate_objective(inputs)
 
         self.objective_function = counted_objective_function
         self.population_size = population_size

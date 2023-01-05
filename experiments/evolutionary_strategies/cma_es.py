@@ -6,12 +6,16 @@ import matplotlib.pyplot as plt
 
 from search_algorithms.evolutionary_strategies.cma_es import CMA_ES
 
-from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
+from objective_functions.objective_function import ObjectiveFunction
+
 from utils.visualization.evolutionary_strategies import plot_algorithm
+
 
 if __name__ == "__main__":
     # Defining the function to optimize
     name = "easom"  # "shifted_sphere", "easom", "cross_in_tray", "egg_holder"
+    model = None  # None, "small", "medium", "large"
+    n_dims = 2  # Whatever int your mind desires (in most cases)
 
     # Hyperparameters for the search
     # Num. of generations
@@ -30,13 +34,12 @@ if __name__ == "__main__":
 
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
-    objective = ObjectiveFunction(name)
-    obj_function = objective.function
-    limits = objective.limits
-    solution_length = objective.solution_length
+    objective_function = ObjectiveFunction(name, n_dims=n_dims, model=model)
+    limits = objective_function.limits
+    solution_length = objective_function.solution_length
 
     cma_es = CMA_ES(
-        objective_function=obj_function,
+        objective_function=objective_function,
         population_size=population_size,
         exploration=exploration,
         solution_length=solution_length,
@@ -58,7 +61,7 @@ if __name__ == "__main__":
         # Visualize
         plot_algorithm(
             ax=ax,
-            obj_function=obj_function,
+            obj_function=objective_function,
             limits=limits,
             current_best=current_best,
             population=population,
@@ -69,11 +72,13 @@ if __name__ == "__main__":
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(next_best)
+        best_fitness = objective_function(next_best)
         print(f"Best fitness: {best_fitness}")
 
         if (
-            torch.isclose(best_fitness, objective.optima, atol=tolerance_for_optima)
+            torch.isclose(
+                best_fitness, objective_function.optima, atol=tolerance_for_optima
+            )
             and break_when_close_to_optima
         ):
             print(f"Found a good-enough optima, breaking.")

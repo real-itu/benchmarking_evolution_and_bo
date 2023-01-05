@@ -15,7 +15,6 @@ from botorch.acquisition import ExpectedImprovement, AcquisitionFunction
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from objective_functions.artificial_landscapes.test_functions import ObjectiveFunction
 from utils.visualization.evolutionary_strategies import plot_algorithm
 from utils.visualization.bayesian_optimization import plot_prediction, plot_acquisition
 from utils.wrappers.counters import counted
@@ -57,7 +56,7 @@ class BayesianOptimization:
 
     def step(
         self,
-        n_points_in_acq_grid: int = 200,
+        n_points_in_acq_grid: int = 400,
         ax_for_prediction: plt.Axes = None,
         ax_for_acquisition: plt.Axes = None,
     ):

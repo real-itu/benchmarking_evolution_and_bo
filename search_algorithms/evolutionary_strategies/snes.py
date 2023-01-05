@@ -49,6 +49,7 @@ class SNES(EvolutionaryStrategy):
             initial_bounds=limits,
             solution_length=solution_length,
             vectorized=True,
+            dtype=torch.get_default_dtype(),
         )
 
         self._snes_searcher = SNES_from_evotorch(
