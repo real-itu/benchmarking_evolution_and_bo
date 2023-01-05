@@ -41,6 +41,7 @@ class CMA_ES(EvolutionaryStrategy):
             initial_bounds=limits,
             solution_length=solution_length,
             vectorized=True,
+            dtype=torch.get_default_dtype(),
         )
 
         self._cmaes_searcher = CMAES_from_evotorch(

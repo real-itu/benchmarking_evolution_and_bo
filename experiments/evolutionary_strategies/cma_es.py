@@ -35,7 +35,6 @@ if __name__ == "__main__":
     # Defining the objective function, limits, and so on...
     # They are all contained in the ObjectiveFunction class
     objective_function = ObjectiveFunction(name, n_dims=n_dims, model=model)
-    obj_function = objective_function.evaluate_objective
     limits = objective_function.limits
     solution_length = objective_function.solution_length
 
@@ -62,7 +61,7 @@ if __name__ == "__main__":
         # Visualize
         plot_algorithm(
             ax=ax,
-            obj_function=obj_function,
+            obj_function=objective_function,
             limits=limits,
             current_best=current_best,
             population=population,
@@ -73,7 +72,7 @@ if __name__ == "__main__":
         ax.clear()
 
         # (uncounted) best fitness evaluation
-        best_fitness = obj_function(next_best)
+        best_fitness = objective_function(next_best)
         print(f"Best fitness: {best_fitness}")
 
         if (

@@ -48,6 +48,7 @@ class PGPE(EvolutionaryStrategy):
             initial_bounds=limits,
             solution_length=solution_length,
             vectorized=True,
+            dtype=torch.get_default_dtype(),
         )
 
         self._pgpe_searcher = PGPE_from_evotorch(
