@@ -152,6 +152,8 @@ def cosine_mixture(x: torch.Tensor) -> torch.Tensor:
 def easom(xy: torch.Tensor) -> torch.Tensor:
     """
     Easom is very flat, with a maxima at (pi, pi).
+
+    Only works in 2D.
     """
     x = xy[..., 0]
     y = xy[..., 1]
@@ -163,6 +165,8 @@ def easom(xy: torch.Tensor) -> torch.Tensor:
 def cross_in_tray(xy: torch.Tensor) -> torch.Tensor:
     """
     Cross-in-tray has several local maxima in a quilt-like pattern.
+
+    Only works in 2D.
     """
     x = xy[..., 0]
     y = xy[..., 1]
@@ -180,6 +184,8 @@ def cross_in_tray(xy: torch.Tensor) -> torch.Tensor:
 def egg_holder(xy: torch.Tensor) -> torch.Tensor:
     """
     The egg holder is especially difficult.
+
+    We only know the optima's location in 2D.
     """
     x = xy[..., 0]
     y = xy[..., 1]
@@ -188,19 +194,40 @@ def egg_holder(xy: torch.Tensor) -> torch.Tensor:
     )
 
 
-def shifted_sphere(xy: torch.Tensor) -> torch.Tensor:
+def shifted_sphere(x: torch.Tensor) -> torch.Tensor:
     """
     The usual squared norm, but shifted away from the origin by a bit.
-    Maximized at (1, 1)
+    Maximized at (1, 1, ..., 1)
     """
-    x = xy[..., 0]
-    y = xy[..., 1]
-    return -((x - 1) ** 2 + (y - 1) ** 2)
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    res = -torch.sum((x - 1) ** 2, dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
 
 
 if __name__ == "__main__":
     x = torch.randn((100, 2))
     print(x)
-    res = ackley_function_01(x)
-    print(res)
-    print(res.shape)
+    for function in [
+        ackley_function_01,
+        alpine_01,
+        alpine_02,
+        bent_cigar,
+        brown,
+        chung_reynolds,
+        cosine_mixture,
+    ]:
+        print(function)
+        res = function(x)
+        print(res)
+        print(res.shape)

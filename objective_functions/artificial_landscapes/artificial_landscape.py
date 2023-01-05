@@ -28,6 +28,19 @@ from .definitions import (
     cosine_mixture,
 )
 
+POSSIBLE_FUNCTIONS = [
+    "ackley_function_01",
+    "alpine_01",
+    "alpine_02",
+    "bent_cigar",
+    "brown",
+    "chung_reynolds",
+    "shifted_sphere",
+    "easom",
+    "cross_in_tray",
+    "egg_holder",
+]
+
 
 class ArtificialLandscape:
     """
@@ -120,17 +133,13 @@ class ArtificialLandscape:
 
 if __name__ == "__main__":
     fig = plt.figure()
-    ax_shifted_sphere = fig.add_subplot(141)
-    plot_heatmap_in_ax(ax_shifted_sphere, shifted_sphere, -4.0, 4.0)
-
-    ax_easom = fig.add_subplot(142)
-    plot_heatmap_in_ax(ax_easom, easom, np.pi - 4, np.pi + 4)
-
-    ax_cross = fig.add_subplot(143)
-    plot_heatmap_in_ax(ax_cross, cross_in_tray, -10.0, 10.0)
-
-    ax_egg = fig.add_subplot(144)
-    plot_heatmap_in_ax(ax_egg, egg_holder, -512.0, 512.0)
+    fig, axes = plt.subplots(4, 4)
+    for ax, function in zip(axes.flatten(), POSSIBLE_FUNCTIONS):
+        artificial_landscape = ArtificialLandscape(function)
+        plot_heatmap_in_ax(
+            ax, artificial_landscape.function, *artificial_landscape.limits
+        )
+        ax.set_title(function)
 
     fig.tight_layout()
     plt.show()
