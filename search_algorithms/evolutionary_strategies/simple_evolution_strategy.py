@@ -2,7 +2,7 @@
 Implements a basic evolution strategy using torch,
 and tests it on the objective functions.
 """
-from typing import Callable
+from typing import Callable, Tuple
 
 import torch
 from torch.distributions import MultivariateNormal
@@ -14,15 +14,17 @@ class SimpleEvolutionStrategy(EvolutionaryStrategy):
     def __init__(
         self,
         objective_function: Callable[[torch.Tensor], torch.Tensor],
+        initial_best: torch.Tensor,
+        solution_length : int,
+        limits : Tuple[float, float] = None,
         population_size: int = 100,
         exploration: float = 1.0,
-        initial_best: torch.Tensor = torch.Tensor([0.0, 0.0]),
     ) -> None:
         super().__init__(objective_function, population_size)
 
         # Setting up the initial mean and fixed covariance
         self.best = initial_best
-        self.covar = exploration * torch.eye(2)
+        self.covar = exploration * torch.eye(solution_length)
 
         # Setting up the population's distribution
         self.population_distribution = MultivariateNormal(

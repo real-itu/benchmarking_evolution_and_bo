@@ -19,11 +19,14 @@ from .artificial_landscapes.artificial_landscape import (
     POSSIBLE_FUNCTIONS,
 )
 
+from .gym.RL_objective import ObjectiveRLGym
 
-class ObjectiveFunction(ArtificialLandscape):
+class ObjectiveFunction(ObjectiveRLGym, ArtificialLandscape): # FIXME 🙈
+
     def __init__(
         self,
         name: str,
+        seed: int,
         n_dims: int = None,
         limits: Tuple[float, float] = None,
         maximize: bool = True,
@@ -35,24 +38,19 @@ class ObjectiveFunction(ArtificialLandscape):
             assert (
                 maximize
             ), "We have only implemented the maximization of artificial landscapes :("
-
-            super().__init__(name=name, n_dims=n_dims)
+            ArtificialLandscape.__init__(self, name=name, n_dims=n_dims)
             self.known_optima: bool = True
             self.maximize: bool = True
-
+            
         else:
             # We are defining an RL task
-            if isinstance(model, torch.nn.Module):
-                assert (
-                    n_dims is None
-                ), "You are defining an RL task. Why are you providing n_dims?"
+            if model is not None:
+                assert (n_dims is None), "You are defining an RL task. Why are you providing n_dims?"
+            
+            ObjectiveRLGym.__init__(self, environment = name, model = model, seed = seed, maximize = maximize, limits = limits)
 
-                self.model = model.to(device)
-                self.n_dims = sum(p.numel() for p in model.parameters())
-            else:
-                self.model = model
-                self.n_dims = n_dims
-
-            self.known_optima: bool = False
-            self.maximize: bool = True
-            self.limits = limits
+    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor: # HACK 🙈
+        if vars(self)['known_optima']:
+            return ArtificialLandscape.evaluate_objective(self, x)
+        else:
+            return ObjectiveRLGym.evaluate_objective(self, x)
