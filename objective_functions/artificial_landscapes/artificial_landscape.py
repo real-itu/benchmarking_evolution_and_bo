@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from utils.visualization.evolutionary_strategies import plot_heatmap_in_ax
 
-from .definitions import (
+from definitions import (
     easom,
     cross_in_tray,
     shifted_sphere,
@@ -27,6 +27,9 @@ from .definitions import (
     brown,
     chung_reynolds,
     cosine_mixture,
+    deb_01,
+    deb_02,
+    deflected_corrugated_spring,
 )
 
 POSSIBLE_FUNCTIONS = [
@@ -36,6 +39,10 @@ POSSIBLE_FUNCTIONS = [
     "bent_cigar",
     "brown",
     "chung_reynolds",
+    "cosine_mixture",
+    "deb_01",
+    "deb_02",
+    "deflected_corrugated_spring",
     "shifted_sphere",
     "easom",
     "cross_in_tray",
@@ -62,6 +69,10 @@ class ArtificialLandscape:
             "bent_cigar",
             "brown",
             "chung_reynolds",
+            "cosine_mixture",
+            "deb_01",
+            "deb_02",
+            "deflected_corrugated_spring",
             "shifted_sphere",
             "easom",
             "cross_in_tray",
@@ -107,6 +118,21 @@ class ArtificialLandscape:
             self.limits = [-1.0, 1.0]
             self.optima_location = torch.Tensor([0.0] * n_dims)
             self.solution_length = n_dims
+        elif name == "deb_01":
+            self.function = deb_01
+            self.limits = [-1.0, 1.0]
+            self.optima_location = torch.Tensor([0.1] * n_dims)
+            self.solution_length = n_dims
+        elif name == "deb_02":
+            self.function = deb_02
+            self.limits = [0.0, 1.0]
+            self.optima_location = torch.Tensor([0.105 ** (4 / 3)] * n_dims)
+            self.solution_length = n_dims
+        elif name == "deflected_corrugated_spring":
+            self.function = deflected_corrugated_spring
+            self.limits = [0.0, 10.0]
+            self.optima_location = torch.Tensor([5.0] * n_dims)
+            self.solution_length = n_dims
         elif name == "shifted_sphere":
             self.function = shifted_sphere
             self.limits = [-4.0, 4.0]
@@ -144,12 +170,12 @@ class ArtificialLandscape:
 if __name__ == "__main__":
     fig = plt.figure()
     fig, axes = plt.subplots(4, 4)
-    for ax, function in zip(axes.flatten(), POSSIBLE_FUNCTIONS):
-        artificial_landscape = ArtificialLandscape(function)
+    for ax, function_name in zip(axes.flatten(), POSSIBLE_FUNCTIONS):
+        artificial_landscape = ArtificialLandscape(function_name)
         plot_heatmap_in_ax(
             ax, artificial_landscape.function, *artificial_landscape.limits
         )
-        ax.set_title(function)
+        ax.set_title(function_name)
 
     fig.tight_layout()
     plt.show()
