@@ -3,7 +3,7 @@ import numpy as np
 import os
 import torch
 
-def seed_it_all(seed):
+def seed_python_numpy_torch_cuda(seed: int):
     seed = np.random.randint(0, 2**32 - 1) if seed is None else seed
     random.seed(seed)
     np.random.seed(seed)

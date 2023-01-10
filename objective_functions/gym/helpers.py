@@ -1,6 +1,7 @@
 import gym
 from typing import Callable, Tuple, Union, TypedDict
 import numpy as np
+from utils.types import Model
 
 from utils.NN_policies.torch_policies import MLP, CNN
 
@@ -33,7 +34,7 @@ def dimensions_env(environment : str):
     return input_dim, action_dim, pixel_env
 
 
-def nbParameters(environment : str, model_dict : TypedDict):
+def nb_parameters(environment : str, model_dict : Model):
     """
     Calculate number of parameters of a torch model for a given Gym environment
     """
@@ -47,8 +48,8 @@ def nbParameters(environment : str, model_dict : TypedDict):
         # TODO implement CNN variable number of hidden layers in the mlp
         # model = CNN(input_dim, action_dim, 32, bias=model_dict['bias'])
 
-    nbParameters = sum(p.numel() for p in model.parameters())
-    return nbParameters
+    nb_parameters = sum(p.numel() for p in model.parameters())
+    return nb_parameters
 
 
 

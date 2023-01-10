@@ -1,24 +1,24 @@
 import torch 
 
-def MLP(inputDim, outputDim, hiddenLayersDims, activation, bias):
+def MLP(input_dim, output_dim, hidden_layers_dims, activation, bias):
     """This function creates a multi-layer perceptron.
 
     Args:
-        inputDim (int): The input dimension of the MLP.
-        outputDim (int): The output dimension of the MLP.
-        hiddenLayersDims (list): A list of integers that represent the number of hidden layers and their dimensions.
+        input_dim (int): The input dimension of the MLP.
+        output_dim (int): The output dimension of the MLP.
+        hidden_layers_dims (list): A list of integers that represent the number of hidden layers and their dimensions.
         activation (torch.nn.functional, optional): The activation function to use. Defaults to tanh.
 
     Returns:
         torch.nn.Module: The MLP.
     """
     layers = []
-    layers.append(torch.nn.Linear(inputDim, hiddenLayersDims[0], bias=bias))
+    layers.append(torch.nn.Linear(input_dim, hidden_layers_dims[0], bias=bias))
     layers.append(activation)
-    for i in range(1, len(hiddenLayersDims)):
-        layers.append(torch.nn.Linear(hiddenLayersDims[i-1], hiddenLayersDims[i], bias=bias))
+    for i in range(1, len(hidden_layers_dims)):
+        layers.append(torch.nn.Linear(hidden_layers_dims[i-1], hidden_layers_dims[i], bias=bias))
         layers.append(activation)
-    layers.append(torch.nn.Linear(hiddenLayersDims[-1], outputDim, bias=bias))
+    layers.append(torch.nn.Linear(hidden_layers_dims[-1], output_dim, bias=bias))
     return torch.nn.Sequential(*layers)
 
 
@@ -42,4 +42,4 @@ class CNN(torch.nn.Module):
         return x
         
     def get_weights(self):
-        return  torch.nn.utils.parameters_to_vector(self.parameters()).detach().numpy()
+        return  torch.nn.utils.parameters_to_vector(self.parameters()).detach()

@@ -4,16 +4,17 @@ from typing import Callable, Tuple, Union, TypedDict
 import numpy as np
 
 from utils.NN_policies.torch_policies import MLP, CNN
-from .helpers import nbParameters, dimensions_env, ScaledFloatFrame
+from utils.types import Model
+from .helpers import nb_parameters, dimensions_env, ScaledFloatFrame
 
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
 torch.set_default_dtype(torch.float64)
 
 class ObjectiveRLGym:
-    def __init__(self, environment: str, model: TypedDict, seed: int, maximize: bool, limits: Tuple[float, float]) -> None:
+    def __init__(self, environment: str, model: Model, seed: int, maximize: bool, limits: Tuple[float, float]) -> None:
         self.seed = seed
-        self.solution_length = nbParameters(environment, model)
+        self.solution_length = nb_parameters(environment, model)
         self.known_optima: bool = False
         self.maximize: bool = True
         assert (maximize), "You want negative reward?"
@@ -43,7 +44,7 @@ class ObjectiveRLGym:
         
         self.environment = env
         
-    def env_rollout(self) -> torch.Tensor:
+    def env_rollout(self, render : bool) -> torch.Tensor:
         
         with torch.no_grad():
             
@@ -78,13 +79,14 @@ class ObjectiveRLGym:
                 # Save reward
                 episodeReward += reward
 
-                # Render the environment (for debugging)
-                # env.render()
+                # Render the environment
+                if render:
+                    self.environment.render()
             
         return torch.tensor(episodeReward, dtype=torch.float64)
         
     
-    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor:
+    def evaluate_objective(self, x: torch.Tensor, render: bool = False) -> torch.Tensor:
         
         with torch.no_grad():
             
@@ -95,7 +97,7 @@ class ObjectiveRLGym:
                 torch.nn.utils.vector_to_parameters(individual_solution, self.model.parameters())
                 
                 # Environment evaluation
-                solution_fitness = self.env_rollout()
+                solution_fitness = self.env_rollout(render=render)
                 
                 # Append to population fitnesses
                 population_fitnesses.append(solution_fitness)

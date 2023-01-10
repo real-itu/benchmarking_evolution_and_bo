@@ -21,7 +21,7 @@ from .artificial_landscapes.artificial_landscape import (
 
 from .gym.RL_objective import ObjectiveRLGym
 
-class ObjectiveFunction(ObjectiveRLGym, ArtificialLandscape): # FIXME 🙈
+class ObjectiveFunction(ObjectiveRLGym, ArtificialLandscape):
 
     def __init__(
         self,
@@ -41,16 +41,21 @@ class ObjectiveFunction(ObjectiveRLGym, ArtificialLandscape): # FIXME 🙈
             ArtificialLandscape.__init__(self, name=name, n_dims=n_dims)
             self.known_optima: bool = True
             self.maximize: bool = True
+            self.type = "artificial_landscape"
             
         else:
             # We are defining an RL task
             if model is not None:
                 assert (n_dims is None), "You are defining an RL task. Why are you providing n_dims?"
             
+            self.type = "gymRL"
             ObjectiveRLGym.__init__(self, environment = name, model = model, seed = seed, maximize = maximize, limits = limits)
 
-    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor: # HACK 🙈
-        if vars(self)['known_optima']:
+    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor:
+        # if vars(self)['known_optima']:
+        if self.type == 'artificial_landscape':
             return ArtificialLandscape.evaluate_objective(self, x)
-        else:
+        elif self.type == 'gymRL':
             return ObjectiveRLGym.evaluate_objective(self, x)
+        else:
+            raise NotImplementedError

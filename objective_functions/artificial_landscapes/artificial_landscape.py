@@ -134,7 +134,7 @@ class ArtificialLandscape:
 
         self.optima = self.function(self.optima_location)
 
-    def evaluate_objective(self, x: torch.Tensor) -> torch.Tensor:
+    def evaluate_objective(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
         return self.function(x)
 
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
