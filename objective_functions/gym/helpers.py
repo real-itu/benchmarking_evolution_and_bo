@@ -13,6 +13,12 @@ def dimensions_env(environment : str):
     from gym.spaces import Discrete, Box
 
     env = gym.make(environment)
+    
+    # Check range action space
+    if env.action_space.low < -1 or env.action_space.high > 1:
+        raise ValueError("You need to scale the action space to [-1, 1] \
+                        or remove the tanh from the last layer of the policy")
+    
     if len(env.observation_space.shape) == 3:  # Pixel-based environment
         pixel_env = True
         input_dim = 3  # number of channels of the observation space
