@@ -1,1 +1,2 @@
 from .bayesian_optimization import BayesianOptimization
+from .high_dimensional_bayesian_optimization import HighDimensionalBayesianOptimization
