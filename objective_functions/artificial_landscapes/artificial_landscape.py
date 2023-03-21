@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from utils.visualization.evolutionary_strategies import plot_heatmap_in_ax
 
-from definitions import (
+from objective_functions.artificial_landscapes.definitions import (
     easom,
     cross_in_tray,
     shifted_sphere,
@@ -169,13 +169,14 @@ class ArtificialLandscape:
 
 if __name__ == "__main__":
     fig = plt.figure()
-    fig, axes = plt.subplots(4, 4)
+    fig, axes = plt.subplots(4, 4, figsize=(7 * 4, 7 * 4))
     for ax, function_name in zip(axes.flatten(), POSSIBLE_FUNCTIONS):
         artificial_landscape = ArtificialLandscape(function_name)
         plot_heatmap_in_ax(
             ax, artificial_landscape.function, *artificial_landscape.limits
         )
         ax.set_title(function_name)
+        ax.axis("off")
 
     fig.tight_layout()
     plt.show()
