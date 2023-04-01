@@ -66,6 +66,10 @@ class BayesianOptimization:
         n_points_in_acq_grid: int = 400,
         ax_for_prediction: plt.Axes = None,
         ax_for_acquisition: plt.Axes = None,
+        colorbar_limits_for_prediction: Tuple[float, float] = (None, None),
+        cmap_prediction: str = None,
+        cmap_acquisition: str = None,
+        plot_colorbar_in_acquisition: bool = False,
     ):
         # Defining the Gaussian Process
         kernel = self.kernel()
@@ -114,6 +118,8 @@ class BayesianOptimization:
                 limits=self.limits,
                 z=self.trace,
                 candidate=candidate,
+                colorbar_limits=colorbar_limits_for_prediction,
+                cmap=cmap_prediction,
             )
 
         if ax_for_acquisition is not None:
@@ -123,6 +129,8 @@ class BayesianOptimization:
                 limits=self.limits,
                 z=self.trace,
                 candidate=candidate,
+                cmap=cmap_acquisition,
+                plot_colorbar=plot_colorbar_in_acquisition,
             )
 
         # Evaluate the obj. function in this one, and append to

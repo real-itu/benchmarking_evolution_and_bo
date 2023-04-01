@@ -33,6 +33,7 @@ def plot_heatmap_in_ax(
     function: Callable[[torch.Tensor], torch.Tensor],
     min_: float,
     max_: float,
+    cmap: str = None,
 ):
     """
     Plots the provided function in the square [min_, max_]^2 as a heatmap.
@@ -44,7 +45,8 @@ def plot_heatmap_in_ax(
 
     res_img = _image_from_values(function(fine_grid), [min_, max_], 100)
 
-    ax.imshow(res_img, extent=[min_, max_, min_, max_])
+    plot = ax.imshow(res_img, extent=[min_, max_, min_, max_], cmap=cmap)
+    return plot
 
 
 def plot_algorithm(
@@ -54,6 +56,7 @@ def plot_algorithm(
     current_best: torch.Tensor,
     population: torch.Tensor,
     next_best: torch.Tensor,
+    cmap: str = None,
 ):
     """
     First plots the objective function as a heatmap in the axis,
@@ -61,7 +64,7 @@ def plot_algorithm(
     using a red circle, and the next best using blue circles. These
     are then visualized only on the [*limits]^2 square.
     """
-    plot_heatmap_in_ax(ax, obj_function, *limits)
+    plot_heatmap_in_ax(ax, obj_function, *limits, cmap=cmap)
     ax.scatter(population[:, 0], population[:, 1], c="white", edgecolors="black")
     ax.scatter([current_best[0]], [current_best[1]], c="red", edgecolors="black")
     ax.scatter([next_best[0]], [next_best[1]], c="blue", edgecolors="black")

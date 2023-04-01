@@ -228,7 +228,7 @@ def cross_in_tray(xy: torch.Tensor) -> torch.Tensor:
     y = xy[..., 1]
     quotient = torch.sqrt(x**2 + y**2) / np.pi
     return (
-        1e-4
+        1
         * (
             torch.abs(torch.sin(x) * torch.sin(y) * torch.exp(torch.abs(10 - quotient)))
             + 1

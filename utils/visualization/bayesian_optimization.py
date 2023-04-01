@@ -16,6 +16,8 @@ def plot_prediction(
     limits: Tuple[float, float],
     z: torch.Tensor,
     candidate: torch.Tensor,
+    cmap: str = None,
+    colorbar_limits: Tuple[float, float] = (None, None),
 ):
     """
     Plots mean of the GP in the axes in a fine grid
@@ -38,10 +40,17 @@ def plot_prediction(
     means = predicted_distribution.mean
     means_as_img = _image_from_values(means, limits, n_points_in_grid)
 
-    plot = ax.imshow(means_as_img, extent=[*limits, *limits])
+    lower, upper = colorbar_limits
+
+    plot = ax.imshow(
+        means_as_img, extent=[*limits, *limits], cmap=cmap, vmin=lower, vmax=upper
+    )
     ax.scatter(z[:, 0], z[:, 1], c="white", edgecolors="black")
     ax.scatter([z[-1, 0]], [z[-1, 1]], c="red", edgecolors="black")
     ax.scatter([candidate[0]], [candidate[1]], c="blue", edgecolors="black")
+
+    if colorbar_limits != (None, None):
+        plt.colorbar(plot, ax=ax, fraction=0.046, pad=0.04)
 
 
 def plot_acquisition(
@@ -50,6 +59,8 @@ def plot_acquisition(
     limits: Tuple[float, float],
     z: torch.Tensor,
     candidate: torch.Tensor,
+    cmap: str = "Blues",
+    plot_colorbar: bool = False,
 ):
     n_points_in_grid = 75
 
@@ -66,7 +77,10 @@ def plot_acquisition(
     acq_values = acq_function(fine_grid_in_latent_space)
     acq_values_as_img = _image_from_values(acq_values, limits, n_points_in_grid)
 
-    plot = ax.imshow(acq_values_as_img, extent=[*limits, *limits], cmap="Blues")
+    plot = ax.imshow(acq_values_as_img, extent=[*limits, *limits], cmap=cmap)
     ax.scatter(z[:, 0], z[:, 1], c="white", edgecolors="black")
     ax.scatter([z[-1, 0]], [z[-1, 1]], c="red", edgecolors="black")
     ax.scatter([candidate[0]], [candidate[1]], c="blue", edgecolors="black")
+
+    if plot_colorbar:
+        plt.colorbar(plot, ax=ax, fraction=0.046, pad=0.04)
