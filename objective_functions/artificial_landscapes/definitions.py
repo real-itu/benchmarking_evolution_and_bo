@@ -149,6 +149,62 @@ def cosine_mixture(x: torch.Tensor) -> torch.Tensor:
     return res
 
 
+def deb_01(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    _, d = x.shape
+    res = (1 / d) * torch.sum(torch.sin(5 * np.pi * x) ** 6, dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def deb_02(x: torch.Tensor) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    _, d = x.shape
+    res = (1 / d) * torch.sum(torch.sin(5 * np.pi * (x ** (3 / 4) - 0.05)) ** 6, dim=1)
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
+def deflected_corrugated_spring(
+    x: torch.Tensor, alpha: float = 5.0, k: float = 5.0
+) -> torch.Tensor:
+    if len(x.shape) == 1:
+        # Add a batch dimension if it's missing
+        x = x.unsqueeze(0)
+        batched = False
+    else:
+        batched = True
+
+    sum_of_squares = torch.sum((x - alpha) ** 2, dim=1)
+    res = -((0.1) * sum_of_squares - torch.cos(k * torch.sqrt(sum_of_squares)))
+
+    # Remove the batch dim if it wasn't there in the beginning
+    if not batched:
+        res = res.squeeze(0)
+
+    return res
+
+
 def easom(xy: torch.Tensor) -> torch.Tensor:
     """
     Easom is very flat, with a maxima at (pi, pi).
@@ -172,7 +228,7 @@ def cross_in_tray(xy: torch.Tensor) -> torch.Tensor:
     y = xy[..., 1]
     quotient = torch.sqrt(x**2 + y**2) / np.pi
     return (
-        1e-4
+        1
         * (
             torch.abs(torch.sin(x) * torch.sin(y) * torch.exp(torch.abs(10 - quotient)))
             + 1
